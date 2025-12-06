@@ -2,9 +2,6 @@
 
 #include <stddef.h>
 
-/* Provide malloc prototype for freestanding build */
-void *malloc(size_t size);
-
 inline size_t strnlen(const char *s, size_t maxlen)
 {
   size_t i = 0;

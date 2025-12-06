@@ -74,8 +74,8 @@ inline void terminal_setcolor(uint8_t color)
 
 inline void _scroll()
 {
-  uint8_t attributeByte = (0 /* black */ << 4) | (15 /* white */ & 0x0F);
-  uint16_t blank = 0x20 /* space */ | (attributeByte << 8);
+  uint8_t attribute_byte = (0 /* black */ << 4) | (15 /* white */ & 0x0F);
+  uint16_t blank = 0x20 /* space */ | (attribute_byte << 8);
 
   if (terminal_row >= VGA_HEIGHT)
   {
