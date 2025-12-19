@@ -1,3 +1,4 @@
+#include "hal.h"
 #include "logs.h"
 #include "product.h"
 #include "serial.h"
@@ -16,6 +17,8 @@
 void kmain() {
   serial_initialize();
   terminal_initialize();
+
+  hal_initialize();
 
   terminal_writestring("Welcome to ");
   terminal_setcolor(VGA_COLOR_WHITE);
