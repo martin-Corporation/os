@@ -1,0 +1,38 @@
+@font-face {
+    font-family: "mx_univga";
+    src:
+        url("/mx_univga.ttf") format("truetype"),
+        url("/mx_univga.woff") format("woff"),
+        url("/mx_univga.woff2") format("woff2"),
+        url("/mx_univga.eot");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "px_univga";
+    src:
+        url("/px_univga.ttf") format("truetype"),
+        url("/px_univga.woff") format("woff"),
+        url("/px_univga.woff2") format("woff2"),
+        url("/px_univga.eot");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "MorePerfectDOSVGA";
+    src: url("/MorePerfectDOSVGA.ttf") format("truetype");
+}
+
+:root {
+    font-family: "mx_univga", "px_univga", "MorePerfectDOSVGA", monospace;
+    line-height: 1;
+    background: #000;
+    color: #fff;
+}
+
+body {
+    margin: 0;
+    margin-top: 1px;
+}

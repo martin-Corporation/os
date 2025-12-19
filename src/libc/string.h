@@ -2,43 +2,38 @@
 
 #include <stddef.h>
 
-inline size_t strnlen(const char *s, size_t maxlen)
-{
+inline size_t strnlen(const char *s, size_t maxlen) {
   size_t i = 0;
-  while (i < maxlen && s[i] != '\0')
-  {
+  while (i < maxlen && s[i] != '\0') {
     i++;
   }
   return i;
 }
 
-inline size_t strlen(const char *str)
-{
+inline size_t strlen(const char *str) {
   size_t len = 0;
+
   while (str[len])
     len++;
+
   return len;
 }
 
-inline int strcmp(const char *s1, const char *s2)
-{
-  while (*s1 && (*s1 == *s2))
-  {
+inline int strcmp(const char *s1, const char *s2) {
+  while (*s1 && (*s1 == *s2)) {
     s1++;
     s2++;
   }
+
   return *(const unsigned char *)s1 - *(const unsigned char *)s2;
 }
 
-inline char *strcat(char *dest, const char *src)
-{
-  while (*dest != '\0')
-  {
+inline char *strcat(char *dest, const char *src) {
+  while (*dest != '\0') {
     dest++;
   }
 
-  while (*src != '\0')
-  {
+  while (*src != '\0') {
     *dest = *src;
     dest++;
     src++;
@@ -49,25 +44,21 @@ inline char *strcat(char *dest, const char *src)
   return dest;
 }
 
-inline void *memcpy(void *dest, const void *src, size_t n)
-{
+inline void *memcpy(void *dest, const void *src, size_t n) {
   char *csrc = (char *)src;
   char *cdest = (char *)dest;
 
-  for (size_t i = 0; i < n; i++)
-  {
+  for (size_t i = 0; i < n; i++) {
     cdest[i] = csrc[i];
   }
 
   return dest;
 }
 
-inline void *memset(void *s, int c, size_t len)
-{
-  unsigned char *p = s;
+inline void *memset(void *s, int c, size_t len) {
+  unsigned char *p = (unsigned char *)s;
 
-  while (len--)
-  {
+  while (len--) {
     *p++ = (unsigned char)c;
   }
 

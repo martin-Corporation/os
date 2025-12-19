@@ -1,22 +1,29 @@
-#include "vga.h"
-#include "panic.h"
+#include "logs.h"
 #include "product.h"
-#include <stdio.h>
+#include "serial.h"
+#include "vga.h"
+#include <stdarg.h>
 
-#if defined(__linux__)
-#error "You are not using a cross-compiler, you will most certainly run into trouble"
+#ifdef __linux__
+#error                                                                         \
+    "You are not using a cross-compiler, you will most certainly run into trouble"
 #endif
 
-#if !defined(__i386__)
+#if !defined(__i386__) && !defined(__wasm__)
 #error "martinOS needs to be compiled with a ix86-elf compiler"
 #endif
 
-void kmain()
-{
-	terminal_initialize();
+void kmain() {
+  serial_initialize();
+  terminal_initialize();
 
-	terminal_writestring(name);
-	terminal_writestring(" ");
-	terminal_writestring(version);
-	terminal_writestring("\n");
+  terminal_writestring("Welcome to ");
+  terminal_setcolor(VGA_COLOR_WHITE);
+  terminal_writestring(PRODUCT_NAME);
+  terminal_writestring(" ");
+  terminal_writestring(PRODUCT_VERSION);
+  terminal_setcolor(vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK));
+  terminal_writestring("!\n\n");
+
+  puts_status(status_map[STATUS_OK], "Booted into the kernel");
 }

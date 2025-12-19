@@ -16,12 +16,12 @@ ASM_OBJECTS := $(ASM_SOURCES:.s=.o)
 
 OBJECTS := $(C_OBJECTS) $(ASM_OBJECTS)
 
-.PHONY: all clean run build
+.PHONY: all wasm clean run build
 
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(LD) $(LDFLAGS) -o $@ $^
+	$(LD) $(LDFLAGS) -o $@ $^ -lgcc
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -29,10 +29,15 @@ $(TARGET): $(OBJECTS)
 %.o: %.s
 	$(AS) $< -o $@
 
+wasm:
+	chmod +x ./compile-wasm.sh
+	./compile-wasm.sh
+
 run: $(TARGET)
-	qemu-system-i386 -kernel $(TARGET)
+	qemu-system-i386 -kernel $(TARGET) -serial stdio
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)
+	rm -f os.wasm
 
 build: $(TARGET)

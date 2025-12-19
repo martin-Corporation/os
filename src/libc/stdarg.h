@@ -15,8 +15,14 @@
  *            define STDARG (if using ANSI C) or VARARGS.
  */
 
+#ifndef __wasm__
 typedef char *va_list;
 #define va_start(ap, parmn) (void)((ap) = (char *)(&(parmn) + 1))
 #define va_end(ap) (void)((ap) = 0)
-#define va_arg(ap, type) \
-  (((type *)((ap) = ((ap) + sizeof(type))))[-1])
+#define va_arg(ap, type) (((type *)((ap) = ((ap) + sizeof(type))))[-1])
+#else
+typedef __builtin_va_list va_list;
+#define va_start(ap, last_fixed) __builtin_va_start(ap, last_fixed)
+#define va_arg(ap, type) __builtin_va_arg(ap, type)
+#define va_end(ap) __builtin_va_end(ap)
+#endif

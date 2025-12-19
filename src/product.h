@@ -1,4 +1,4 @@
 #pragma once
 
-const char *name = "martinOS";
-const char *version = "boilerplate";
+#define PRODUCT_NAME "martinOS"
+#define PRODUCT_VERSION "boilerplate"
