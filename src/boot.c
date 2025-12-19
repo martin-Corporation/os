@@ -3,7 +3,7 @@
 #include "product.h"
 #include "serial.h"
 #include "vga.h"
-#include <stdarg.h>
+#include <stdio.h>
 
 #ifdef __linux__
 #error                                                                         \
@@ -15,10 +15,9 @@
 #endif
 
 void kmain() {
+  hal_initialize();
   serial_initialize();
   terminal_initialize();
-
-  hal_initialize();
 
   terminal_writestring("Welcome to ");
   terminal_setcolor(VGA_COLOR_WHITE);

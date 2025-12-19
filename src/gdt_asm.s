@@ -1,4 +1,5 @@
 # GDT from https://github.com/nanobyte-dev/nanobyte_os
+
 .text
     .code32
 
@@ -14,7 +15,7 @@ i686_GDT_Load:
     movl 12(%ebp), %eax
     pushl %eax
     pushl $reload_cs
-    lret
+    ret
 
 reload_cs:
 

@@ -23,3 +23,5 @@ inline uint8_t inb(uint16_t port) {
 }
 
 inline void io_wait() { outb(0x80, 0); }
+void __attribute__((cdecl)) asm_panic();
+void __attribute__((cdecl)) enable_interrupts();
