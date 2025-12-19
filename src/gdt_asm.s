@@ -1,5 +1,5 @@
 # GDT from https://github.com/nanobyte-dev/nanobyte_os
-    .text
+.text
     .code32
 
     .globl i686_GDT_Load
