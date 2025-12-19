@@ -84,11 +84,15 @@ gdt_entry_t g_gdt[] = {
 
 gdt_descriptor_t g_gdt_descriptor = {sizeof(g_gdt) - 1, g_gdt};
 
+#ifndef __wasm__
 void __attribute__((cdecl)) i686_GDT_Load(gdt_descriptor_t *descriptor,
                                           uint16_t codeSegment,
                                           uint16_t dataSegment);
+#endif
 
 void gdt_initialize() {
+#ifndef __wasm__
   i686_GDT_Load(&g_gdt_descriptor, i686_GDT_CODE_SEGMENT,
                 i686_GDT_DATA_SEGMENT);
+#endif
 }
