@@ -1,5 +1,6 @@
+#include "drivers/keyboard.h"
 #include "hal.h"
-#include "keyboard.h"
+#include "ime.h"
 #include "logs.h"
 #include "product.h"
 #include "serial.h"
@@ -29,6 +30,7 @@ void kmain() {
 
   puts_status(status_map[STATUS_OK], "Booted into the kernel");
   keyboard_initialize();
+  ime_initialize();
 
   // random(?) stuff that makes the keyboard work
   // (dont ask me why)

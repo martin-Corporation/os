@@ -4,7 +4,7 @@
 #include "isr.h"
 #include "pic.h"
 #include <asm/io.h>
-#include <stdio.h>
+#include <stddef.h>
 
 #define PIC_REMAP_OFFSET 0x20
 
@@ -16,13 +16,13 @@ void i686_IRQ_Handler(registers_t *regs) {
   uint8_t pic_isr = pic_read_in_service_register();
   uint8_t pic_irr = pic_read_irq_request_register();
 
-  printf("IRQ %d  ISR=%x  IRR=%x...\n", irq, pic_isr, pic_irr);
+  // printf("IRQ %d  ISR=%x  IRR=%x...\n", irq, pic_isr, pic_irr);
 
   if (g_irq_handlers[irq] != NULL) {
     // handle IRQ
     g_irq_handlers[irq](regs);
   } else {
-    printf("Unhandled IRQ %d  ISR=%x  IRR=%x...\n", irq, pic_isr, pic_irr);
+    // printf("Unhandled IRQ %d  ISR=%x  IRR=%x...\n", irq, pic_isr, pic_irr);
   }
 
   // send EOI

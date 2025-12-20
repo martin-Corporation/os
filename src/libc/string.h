@@ -65,6 +65,16 @@ inline void *memset(void *s, int c, size_t len) {
   return s;
 }
 
+inline char *strcpy(char *dest, const char *src) {
+  if (dest == NULL || src == NULL)
+    return NULL;
+
+  char *temp = dest;
+  while ((*dest++ = *src++) != '\0')
+    ;
+  return temp;
+}
+
 // inline char *strndup(const char *s, size_t n)
 // {
 //   size_t len = strnlen(s, n);

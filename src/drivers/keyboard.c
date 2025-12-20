@@ -1,9 +1,9 @@
 #include "keyboard.h"
-#include "irq.h"
-#include "logs.h"
-#include "pic.h"
+#include "../ime.h"
+#include "../irq.h"
+#include "../logs.h"
+#include "../pic.h"
 #include <asm/io.h>
-#include <stdio.h>
 
 #define PS2_CMD 0x64
 #define PS2_DATA 0x60
@@ -17,6 +17,11 @@ static void keyboard_handler(registers_t *regs) {
     shift_pressed = 1;
   else if (sc == 0xAA || sc == 0xB6)
     shift_pressed = 0;
+
+  const kbd_packet_t packet = {.scancode = sc,
+                               .shift_pressed = shift_pressed,
+                               .event = (sc & 0x80) != 0 ? KEY_UP : KEY_DOWN};
+  handle_packet(packet);
 }
 
 static void ps2_wait_write_ready() {
@@ -30,7 +35,6 @@ static void ps2_wait_output() {
 }
 
 void keyboard_initialize() {
-
   outb(PS2_CMD, 0xAD);
   ps2_wait_write_ready();
   outb(PS2_CMD, 0xA7);

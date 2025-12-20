@@ -1,5 +1,6 @@
 #include "vga.h"
 #include "cursor.h"
+#include <stdbool.h>
 #include <string.h>
 
 #ifdef __wasm__
