@@ -3,7 +3,6 @@
 #include "product.h"
 #include "serial.h"
 #include "vga.h"
-#include <stdio.h>
 
 #ifdef __linux__
 #error                                                                         \
