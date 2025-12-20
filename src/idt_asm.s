@@ -1,4 +1,5 @@
 # IDT from https://github.com/nanobyte-dev/nanobyte_os
+
 .text
     .code32
 
