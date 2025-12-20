@@ -78,8 +78,36 @@ const imports = {
         );
       }
     },
+    enable_interrupts: () => {},
+    asm_panic() {
+      if (!wasmInstance) return;
+      this.panic(-1);
+    },
+    puts(ptr: number) {
+      if (!wasmInstance) return;
+      const memory = wasmInstance.exports.memory as WebAssembly.Memory;
+      const bytes = new Uint8Array(memory.buffer);
+
+      let end = ptr;
+      while (bytes[end] !== 0) {
+        end++;
+      }
+
+      const text = decoder.decode(bytes.subarray(ptr, end));
+      console.log(text);
+      document.body.append(
+        Object.assign(document.createElement("span"), {
+          innerText: text,
+          style: "white-space: pre; font-family: monospace; color: white !important",
+        }),
+      );
+    }
   },
 };
+
+for (let i = 0; i < 256; i++) {
+  imports.env[`i686_ISR${i}` as keyof typeof imports.env] = console.log;
+}
 
 WebAssembly.instantiateStreaming(fetch(os), imports)
   .then(({ instance }) => {
