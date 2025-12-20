@@ -15,10 +15,9 @@
 #endif
 
 void kmain() {
-  hal_initialize();
-  keyboard_initialize();
   serial_initialize();
   terminal_initialize();
+  hal_initialize();
 
   terminal_writestring("Welcome to ");
   terminal_setcolor(VGA_COLOR_WHITE);
@@ -29,4 +28,13 @@ void kmain() {
   terminal_writestring("!\n\n");
 
   puts_status(status_map[STATUS_OK], "Booted into the kernel");
+  keyboard_initialize();
+
+  // random(?) stuff that makes the keyboard work
+  // (dont ask me why)
+  outb(0x21, ~(1 << 1));
+  outb(0xA1, 0xFF);
+  asm("sti");
+  for (;;)
+    asm("hlt");
 }

@@ -2,81 +2,57 @@
 #include "irq.h"
 #include "logs.h"
 #include "pic.h"
-#include "ps2.h"
 #include <asm/io.h>
 #include <stdio.h>
 
-#define KBD_DATA_PORT 0x60
-#define KBD_STATUS_PORT 0x64
+#define PS2_CMD 0x64
+#define PS2_DATA 0x60
 
 static volatile int shift_pressed = 0;
 
 static void keyboard_handler(registers_t *regs) {
   (void)regs;
+  uint8_t sc = inb(PS2_DATA);
+  if (sc == 0x2A || sc == 0x36)
+    shift_pressed = 1;
+  else if (sc == 0xAA || sc == 0xB6)
+    shift_pressed = 0;
+}
 
-  if (inb(KBD_STATUS_PORT) & 0x01) {
-    uint8_t scancode = inb(KBD_DATA_PORT);
+static void ps2_wait_write_ready(void) {
+  while (inb(PS2_CMD) & 0x02)
+    ;
+}
 
-    if (scancode == 250 && shift_pressed == 0) {
-      printf("ACK byte\n");
-      return;
-    }
-
-    if (scancode == 0x2A || scancode == 0x36) {
-      shift_pressed = 1;
-    } else if (scancode == 0xAA || scancode == 0xB6) {
-      shift_pressed = 0;
-    }
-
-    if (scancode == 0xE0) {
-      return;
-    }
-
-    printf("Scancode: %d; shift_pressed: %d\n", scancode, shift_pressed);
-  }
+static void ps2_wait_output(void) {
+  while (!(inb(PS2_CMD) & 0x01))
+    ;
 }
 
 void keyboard_initialize() {
-  const int status = inb(0x64);
-  printf("PS/2 controller status: as %cd: %d, as %cc: %c\n", '%', status, '%',
-         status);
 
-  outb(0x60, 0xF4);
-  if (inb(0x60) != 0xFA)
-    return puts_status(status_map[STATUS_FAIL],
-                       "Failed to initialize keyboard");
-
-  outb(0x64, 0xAD);
-
-  const int res_1 = inb(0x64);
-
-  outb(0x64, 0xA7);
-
-  const int res_2 = inb(0x64);
-
-  printf("res_1 (outb(0x64, 0xAD)): %d\n", res_1);
-  printf("res_2 (outb(0x64, 0xA7)): %d\n", res_2);
-
-  // drain keyboard (bit 1 i think)
-  outb(0x64, 0xAE);
-
-  while (get_status_register(0x01))
-    ;
-
-  printf("get_status_register(0x00): %d\n", get_status_register(0x00));
-
-  // This bootloops/hangs:
-  // while (inb(0x60))
-  //   ;
-
-  const int status_port_before = inb(0x64);
-  outb(0x64, 0x20);
-  outb(0x64, 0x60);
-  const int status_port_now = inb(0x64);
-
-  printf("status port before: %d; status port now: %d\n", status_port_before,
-         status_port_now);
-
-  irq_register_handler(1, keyboard_handler);
+  outb(PS2_CMD, 0xAD);
+  ps2_wait_write_ready();
+  outb(PS2_CMD, 0xA7);
+  ps2_wait_write_ready();
+  while (inb(PS2_CMD) & 0x01)
+    inb(PS2_DATA);
+  ps2_wait_write_ready();
+  outb(PS2_CMD, 0x20);
+  ps2_wait_output();
+  uint8_t config = inb(PS2_DATA);
+  config |= 0x01;
+  ps2_wait_write_ready();
+  outb(PS2_CMD, 0x60);
+  ps2_wait_write_ready();
+  outb(PS2_DATA, config);
+  ps2_wait_write_ready();
+  outb(PS2_DATA, 0xF4);
+  ps2_wait_output();
+  if (inb(PS2_DATA) != 0xFA)
+    return;
+  outb(PS2_CMD, 0xAE);
   pic_unmask(1);
+  irq_register_handler(1, keyboard_handler);
+  puts_status(status_map[STATUS_OK], "Initialized keyboard driver");
 }
