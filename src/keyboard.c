@@ -19,12 +19,12 @@ static void keyboard_handler(registers_t *regs) {
     shift_pressed = 0;
 }
 
-static void ps2_wait_write_ready(void) {
+static void ps2_wait_write_ready() {
   while (inb(PS2_CMD) & 0x02)
     ;
 }
 
-static void ps2_wait_output(void) {
+static void ps2_wait_output() {
   while (!(inb(PS2_CMD) & 0x01))
     ;
 }
