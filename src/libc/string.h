@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <stdio.h>
 
 inline size_t strnlen(const char *s, size_t maxlen) {
   size_t i = 0;
@@ -75,18 +76,14 @@ inline char *strcpy(char *dest, const char *src) {
   return temp;
 }
 
-// inline char *strndup(const char *s, size_t n)
-// {
-//   size_t len = strnlen(s, n);
-//   char *d = malloc(len + 1);
-//   if (!d)
-//     return NULL;
-//   memcpy(d, s, len);
-//   d[len] = '\0';
-//   return d;
-// }
+inline char *strndup(const char *s, size_t n) {
+  size_t len = strnlen(s, n);
+  char *d = (char *)malloc(len + 1);
+  if (!d)
+    return NULL;
+  memcpy(d, s, len);
+  d[len] = '\0';
+  return d;
+}
 
-// inline char *strdup(const char *s)
-// {
-//   return strndup(s, strlen(s));
-// }
+inline char *strdup(const char *s) { return strndup(s, strlen(s)); }
