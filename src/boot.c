@@ -1,4 +1,5 @@
 #include "hal.h"
+#include "keyboard.h"
 #include "logs.h"
 #include "product.h"
 #include "serial.h"
@@ -15,6 +16,7 @@
 
 void kmain() {
   hal_initialize();
+  keyboard_initialize();
   serial_initialize();
   terminal_initialize();
 
