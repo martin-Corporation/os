@@ -32,11 +32,6 @@ void kmain() {
   keyboard_initialize();
   ime_initialize();
 
-  // random(?) stuff that makes the keyboard work
-  // (dont ask me why)
-  outb(0x21, ~(1 << 1));
-  outb(0xA1, 0xFF);
-  asm("sti");
   for (;;)
     asm("hlt");
 }
