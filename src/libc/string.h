@@ -90,4 +90,3 @@ inline char *strdup(const char *s) { return strndup(s, strlen(s)); }
 
 size_t strspn(const char *cs, const char *ct);
 size_t strcspn(const char *s, const char *reject);
-char *strtok(const char *s, const char *delim);

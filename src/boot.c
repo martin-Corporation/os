@@ -29,9 +29,14 @@ void kmain() {
   terminal_writestring("!\n\n");
 
   puts_status(status_map[STATUS_OK], "Booted into the kernel");
+
+#ifndef __wasm__
   keyboard_initialize();
+#endif
   ime_initialize();
 
+#ifndef __wasm__
   for (;;)
     asm("hlt");
+#endif
 }

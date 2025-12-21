@@ -98,10 +98,11 @@ const imports = {
       document.body.append(
         Object.assign(document.createElement("span"), {
           innerText: text,
-          style: "white-space: pre; font-family: monospace; color: white !important",
+          style:
+            "white-space: pre; font-family: monospace; color: white !important",
         }),
       );
-    }
+    },
   },
 };
 
@@ -112,6 +113,7 @@ for (let i = 0; i < 256; i++) {
 WebAssembly.instantiateStreaming(fetch(os), imports)
   .then(({ instance }) => {
     wasmInstance = instance;
+    console.log(instance);
 
     if (instance.exports.kmain) {
       (instance.exports.kmain as Function)();

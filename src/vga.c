@@ -47,8 +47,8 @@ void terminal_initialize() {
 
 void terminal_setcolor(uint8_t color) { terminal_color = color; }
 
-static void _scroll() {
 #ifndef __wasm__
+static void _scroll() {
   uint8_t attribute_byte = (0 << 4) | (15 & 0x0F);
   uint16_t blank = 0x20 /* space */ | (attribute_byte << 8);
 
@@ -68,8 +68,8 @@ static void _scroll() {
 
     terminal_row = VGA_HEIGHT - 1;
   }
-#endif
 }
+#endif
 
 void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
 #ifndef __wasm__

@@ -13,8 +13,8 @@ irq_handler_t g_irq_handlers[16];
 void i686_IRQ_Handler(registers_t *regs) {
   int irq = regs->interrupt - PIC_REMAP_OFFSET;
 
-  uint8_t pic_isr = pic_read_in_service_register();
-  uint8_t pic_irr = pic_read_irq_request_register();
+  // uint8_t pic_isr = pic_read_in_service_register();
+  // uint8_t pic_irr = pic_read_irq_request_register();
 
   // printf("IRQ %d  ISR=%x  IRR=%x...\n", irq, pic_isr, pic_irr);
 
