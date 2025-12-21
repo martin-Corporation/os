@@ -20,6 +20,12 @@ After you've installed the required packages, use the `make` command to build an
 make run
 ```
 
+To build for WebAssembly instead:
+
+```sh
+make wasm
+```
+
 To delete the build, use:
 
 ```sh
