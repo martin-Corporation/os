@@ -31,3 +31,10 @@ To delete the build, use:
 ```sh
 make clean
 ```
+
+## Roadmap
+
+> TODO: Make a GitHub roadmap
+
+- [ ] `ext4` File System
+- [ ] Userspace (e.g. program execution)
