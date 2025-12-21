@@ -30,5 +30,3 @@ inline int putchar(int c) {
 }
 
 int printf(const char *fmt, ...);
-void *malloc(size_t size);
-void free(void *ptr);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stddef.h>
-#include <stdio.h>
+#include <stdlib.h>
 
 inline size_t strnlen(const char *s, size_t maxlen) {
   size_t i = 0;
