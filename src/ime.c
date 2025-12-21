@@ -2,7 +2,7 @@
 #include "cursor.h"
 #include "drivers/keyboard/layouts/us.h"
 #include "product.h"
-#include "terminal.h"
+#include "shell.h"
 #include "vga.h"
 #include <stdio.h>
 #include <string.h>
