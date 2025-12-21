@@ -38,3 +38,4 @@ make clean
 
 - [ ] `ext4` File System
 - [ ] Userspace (e.g. program execution)
+- [ ] Networking
