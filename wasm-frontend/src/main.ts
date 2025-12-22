@@ -1,14 +1,6 @@
 import "./style.css";
 import os from "../../os.wasm?url";
 
-function decodeVgaColor(vgaByte: number) {
-  const byte = vgaByte & 0xff;
-  const fg = byte & 0x0f;
-  const bg = (byte >> 4) & 0x0f;
-
-  return { fg, bg };
-}
-
 let wasmInstance: WebAssembly.Instance;
 const decoder = new TextDecoder();
 
@@ -31,19 +23,23 @@ const vgaColorToCSS = [
   "white", // VGA_COLOR_WHITE = 15,
 ] as const;
 
+function decodeVgaColor(vgaByte: number) {
+  const byte = vgaByte & 0xff;
+  const fg = byte & 0x0f;
+  const bg = (byte >> 4) & 0x0f;
+  return { fg, bg };
+}
+
 const imports = {
   env: {
     panic: (ptr: number) => {
       if (!wasmInstance) return;
-
       const memory = wasmInstance.exports.memory as WebAssembly.Memory;
       const bytes = new Uint8Array(memory.buffer);
-
       let end = ptr;
       while (bytes[end] !== 0) {
         end++;
       }
-
       const text = decoder.decode(bytes.subarray(ptr, end));
       console.error(text);
       document.body.append(
@@ -53,15 +49,11 @@ const imports = {
         }),
       );
     },
-
     js_console_log_args: (ptr: number, len: number, useConsole: number) => {
       if (!wasmInstance) return;
-
       const memory = wasmInstance.exports.memory as WebAssembly.Memory;
       const bytes = new Uint8Array(memory.buffer, ptr, len);
-
       const text = decoder.decode(bytes);
-
       if (useConsole) {
         console.log(text);
       } else {
@@ -69,7 +61,6 @@ const imports = {
           wasmInstance.exports.get_terminal_color as any as () => number
         )();
         const fgAndBg = decodeVgaColor(color);
-
         document.body.append(
           Object.assign(document.createElement("span"), {
             innerText: text,
@@ -87,12 +78,10 @@ const imports = {
       if (!wasmInstance) return;
       const memory = wasmInstance.exports.memory as WebAssembly.Memory;
       const bytes = new Uint8Array(memory.buffer);
-
       let end = ptr;
       while (bytes[end] !== 0) {
         end++;
       }
-
       const text = decoder.decode(bytes.subarray(ptr, end));
       console.log(text);
       document.body.append(
@@ -103,6 +92,24 @@ const imports = {
         }),
       );
     },
+    putchar(char: number) {
+      if (!wasmInstance) return;
+
+      console.log(String.fromCharCode(char));
+
+      const color = (
+        wasmInstance.exports.get_terminal_color as any as () => number
+      )();
+
+      const fgAndBg = decodeVgaColor(color);
+
+      document.body.append(
+        Object.assign(document.createElement("span"), {
+          innerText: String.fromCharCode(char),
+          style: `color: ${vgaColorToCSS[fgAndBg.fg]}; background-color: ${vgaColorToCSS[fgAndBg.bg]};`,
+        }),
+      );
+    },
   },
 };
 
@@ -110,15 +117,240 @@ for (let i = 0; i < 256; i++) {
   imports.env[`i686_ISR${i}` as keyof typeof imports.env] = console.log;
 }
 
-WebAssembly.instantiateStreaming(fetch(os), imports)
+const KEYBOARD_US = [
+  0,
+  27,
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "0",
+  "-",
+  "=",
+  "\b",
+  "\t" /* <-- Tab */,
+  "q",
+  "w",
+  "e",
+  "r",
+  "t",
+  "y",
+  "u",
+  "i",
+  "o",
+  "p",
+  "[",
+  "]",
+  "\n",
+  0 /* <-- control key */,
+  "a",
+  "s",
+  "d",
+  "f",
+  "g",
+  "h",
+  "j",
+  "k",
+  "l",
+  ";",
+  "'",
+  "`",
+  0,
+  "\\",
+  "z",
+  "x",
+  "c",
+  "v",
+  "b",
+  "n",
+  "m",
+  ",",
+  ".",
+  "/",
+  0,
+  "*",
+  0 /* Alt */,
+  " " /* Space bar */,
+  0 /* Caps lock */,
+  0 /* 59 - F1 key ... > */,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0 /* < ... F10 */,
+  0 /* 69 - Num lock*/,
+  0 /* Scroll Lock */,
+  0 /* Home key */,
+  0 /* Up Arrow */,
+  0 /* Page Up */,
+  "-",
+  0 /* Left Arrow */,
+  0,
+  0 /* Right Arrow */,
+  "=",
+  0 /* 79 - End key*/,
+  0 /* Down Arrow */,
+  0 /* Page Down */,
+  0 /* Insert Key */,
+  0 /* Delete Key */,
+  0,
+  0,
+  0,
+  0 /* F11 Key */,
+  0 /* F12 Key */,
+  0 /* All other keys are undefined */,
+];
+
+const SHIFT_KEYBOARD_US = [
+  0,
+  27,
+  "!",
+  "@",
+  "#",
+  "$",
+  "%",
+  "^",
+  "&",
+  "*",
+  "(",
+  ")",
+  "_",
+  "+",
+  "\b",
+  "\t" /* <-- Tab */,
+  "Q",
+  "W",
+  "E",
+  "R",
+  "T",
+  "Y",
+  "U",
+  "I",
+  "O",
+  "P",
+  "{",
+  "}",
+  "\n",
+  0 /* <-- control key */,
+  "A",
+  "S",
+  "D",
+  "F",
+  "G",
+  "H",
+  "J",
+  "K",
+  "L",
+  ":",
+  '"',
+  "~",
+  0,
+  "|",
+  "Z",
+  "X",
+  "C",
+  "V",
+  "B",
+  "N",
+  "M",
+  "<",
+  ">",
+  "?",
+  0,
+  "*",
+  0 /* Alt */,
+  " " /* Space bar */,
+  0 /* Caps lock */,
+  0 /* 59 - F1 key ... > */,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0 /* < ... F10 */,
+  0 /* 69 - Num lock*/,
+  0 /* Scroll Lock */,
+  0 /* Home key */,
+  0 /* Up Arrow */,
+  0 /* Page Up */,
+  "_",
+  0 /* Left Arrow */,
+  0,
+  0 /* Right Arrow */,
+  "+",
+  0 /* 79 - End key*/,
+  0 /* Down Arrow */,
+  0 /* Page Down */,
+  0 /* Insert Key */,
+  0 /* Delete Key */,
+  0,
+  0,
+  0,
+  0 /* F11 Key */,
+  0 /* F12 Key */,
+  0 /* All other keys are undefined */,
+];
+
+const KEY_TO_CHAR: Record<string, string> = {
+  Enter: "\n",
+};
+
+const KEY_TO_SCANCODE: Record<string, number> = {
+  Backspace: 142,
+};
+
+function callExport(name: string, ...args: number[]) {
+  const fn: any = (wasmInstance as any).exports[name];
+
+  if (typeof fn !== "function") {
+    console.warn(`Export ${name} not found`);
+    return;
+  }
+
+  return fn(...args);
+}
+
+WebAssembly.instantiateStreaming(fetch(os), {
+  env: {
+    ...imports.env,
+  },
+})
   .then(({ instance }) => {
     wasmInstance = instance;
-    console.log(instance);
+
+    window.addEventListener("keydown", (event) => {
+      const scancode = (
+        event.shiftKey ? SHIFT_KEYBOARD_US : KEYBOARD_US
+      ).findIndex((e) =>
+        typeof e === "string"
+          ? e ===
+            (event.key in KEY_TO_CHAR ? KEY_TO_CHAR[event.key] : event.key)
+          : false,
+      );
+
+      callExport(
+        "queue_inb_data",
+        0x60,
+        scancode > -1 ? scancode : KEY_TO_SCANCODE[event.key],
+      );
+
+      callExport("keyboard_handler");
+    });
 
     if (instance.exports.kmain) {
       (instance.exports.kmain as Function)();
-    } else {
-      console.warn("kmain not found");
     }
   })
   .catch((...err) => {

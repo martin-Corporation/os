@@ -69,7 +69,9 @@ void handle_packet(kbd_packet_t packet) {
     return;
   }
 
-  terminal_writestring(&key);
+  // For some reason terminal_writestring(&key) prints random garbage between
+  // characters, so we have to use printf
+  printf("%c", key);
 
   const size_t len = strlen(prompt_buffer);
   if (len < sizeof(prompt_buffer) - 1) {
