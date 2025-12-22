@@ -4,7 +4,7 @@ import os from "../../os.wasm?url";
 let wasmInstance: WebAssembly.Instance;
 const decoder = new TextDecoder();
 
-const vgaColorToCSS = [
+const VGA_COLOR_TO_CSS = [
   "black", // VGA_COLOR_BLACK = 0,
   "blue", // VGA_COLOR_BLUE = 1,
   "#00a500", // VGA_COLOR_GREEN = 2,
@@ -64,7 +64,7 @@ const imports = {
         document.body.append(
           Object.assign(document.createElement("span"), {
             innerText: text,
-            style: `white-space: pre; color: ${vgaColorToCSS[fgAndBg.fg]}; background-color: ${vgaColorToCSS[fgAndBg.bg]};`,
+            style: `white-space: pre; color: ${VGA_COLOR_TO_CSS[fgAndBg.fg]}; background-color: ${VGA_COLOR_TO_CSS[fgAndBg.bg]};`,
           }),
         );
       }
@@ -106,7 +106,7 @@ const imports = {
       document.body.append(
         Object.assign(document.createElement("span"), {
           innerText: String.fromCharCode(char),
-          style: `white-space: pre; color: ${vgaColorToCSS[fgAndBg.fg]}; background-color: ${vgaColorToCSS[fgAndBg.bg]};`,
+          style: `white-space: pre; color: ${VGA_COLOR_TO_CSS[fgAndBg.fg]}; background-color: ${VGA_COLOR_TO_CSS[fgAndBg.bg]};`,
         }),
       );
     },
@@ -133,7 +133,7 @@ const KEYBOARD_US = [
   "-",
   "=",
   "\b",
-  "\t" /* <-- Tab */,
+  "\t",
   "q",
   "w",
   "e",
@@ -147,7 +147,7 @@ const KEYBOARD_US = [
   "[",
   "]",
   "\n",
-  0 /* <-- control key */,
+  0,
   "a",
   "s",
   "d",
@@ -174,10 +174,8 @@ const KEYBOARD_US = [
   "/",
   0,
   "*",
-  0 /* Alt */,
-  " " /* Space bar */,
-  0 /* Caps lock */,
-  0 /* 59 - F1 key ... > */,
+  0,
+  " ",
   0,
   0,
   0,
@@ -186,29 +184,31 @@ const KEYBOARD_US = [
   0,
   0,
   0,
-  0 /* < ... F10 */,
-  0 /* 69 - Num lock*/,
-  0 /* Scroll Lock */,
-  0 /* Home key */,
-  0 /* Up Arrow */,
-  0 /* Page Up */,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
   "-",
-  0 /* Left Arrow */,
   0,
-  0 /* Right Arrow */,
+  0,
+  0,
   "=",
-  0 /* 79 - End key*/,
-  0 /* Down Arrow */,
-  0 /* Page Down */,
-  0 /* Insert Key */,
-  0 /* Delete Key */,
   0,
   0,
   0,
-  0 /* F11 Key */,
-  0 /* F12 Key */,
-  0 /* All other keys are undefined */,
-];
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+] as const;
 
 const SHIFT_KEYBOARD_US = [
   0,
@@ -226,7 +226,7 @@ const SHIFT_KEYBOARD_US = [
   "_",
   "+",
   "\b",
-  "\t" /* <-- Tab */,
+  "\t",
   "Q",
   "W",
   "E",
@@ -240,7 +240,7 @@ const SHIFT_KEYBOARD_US = [
   "{",
   "}",
   "\n",
-  0 /* <-- control key */,
+  0,
   "A",
   "S",
   "D",
@@ -267,10 +267,8 @@ const SHIFT_KEYBOARD_US = [
   "?",
   0,
   "*",
-  0 /* Alt */,
-  " " /* Space bar */,
-  0 /* Caps lock */,
-  0 /* 59 - F1 key ... > */,
+  0,
+  " ",
   0,
   0,
   0,
@@ -279,37 +277,39 @@ const SHIFT_KEYBOARD_US = [
   0,
   0,
   0,
-  0 /* < ... F10 */,
-  0 /* 69 - Num lock*/,
-  0 /* Scroll Lock */,
-  0 /* Home key */,
-  0 /* Up Arrow */,
-  0 /* Page Up */,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
   "_",
-  0 /* Left Arrow */,
   0,
-  0 /* Right Arrow */,
+  0,
+  0,
   "+",
-  0 /* 79 - End key*/,
-  0 /* Down Arrow */,
-  0 /* Page Down */,
-  0 /* Insert Key */,
-  0 /* Delete Key */,
   0,
   0,
   0,
-  0 /* F11 Key */,
-  0 /* F12 Key */,
-  0 /* All other keys are undefined */,
-];
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+] as const;
 
 const KEY_TO_CHAR: Record<string, string> = {
   Enter: "\n",
-};
+} as const;
 
 const KEY_TO_SCANCODE: Record<string, number> = {
   Backspace: 142,
-};
+} as const;
 
 function callExport(name: string, ...args: number[]) {
   const fn: any = (wasmInstance as any).exports[name];

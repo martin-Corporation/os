@@ -36,6 +36,7 @@ make clean
 
 > TODO: Make a GitHub roadmap
 
+- [ ] `<canvas>` renderer for the WASM build (+ simulate VGA Text Mode, preferably also simulate the same VGA Text Mode buffer at the same address)
 - [ ] `ext4` File System
 - [ ] Userspace (e.g. program execution)
 - [ ] Networking
