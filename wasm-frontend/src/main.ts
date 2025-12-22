@@ -106,7 +106,7 @@ const imports = {
       document.body.append(
         Object.assign(document.createElement("span"), {
           innerText: String.fromCharCode(char),
-          style: `color: ${vgaColorToCSS[fgAndBg.fg]}; background-color: ${vgaColorToCSS[fgAndBg.bg]};`,
+          style: `white-space: pre; color: ${vgaColorToCSS[fgAndBg.fg]}; background-color: ${vgaColorToCSS[fgAndBg.bg]};`,
         }),
       );
     },
