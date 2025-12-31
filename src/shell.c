@@ -1,3 +1,8 @@
 #include "shell.h"
 
-int handle_command(const char *command) { return 0; }
+int handle_command(const char *command) {
+  (void)command;
+
+  // TODO: Real userspace shell
+  return 0;
+}

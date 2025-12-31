@@ -36,11 +36,18 @@ stack_bottom:
 .skip 16384 # 16 KiB
 stack_top:
 
-/*
-The linker script specifies _start as the entry point to the kernel and the
-bootloader will jump to this position once the kernel has been loaded. It
-doesn't make sense to return from this function as the bootloader is gone.
-*/
+.section .data
+gdt_start:
+    /* Setup GDT before setting it up in the HAL to make it boot (GRUB does a General Protection Fault otherwise for some reason) */
+    .quad 0x0000000000000000
+    .quad 0x00CF9A000000FFFF
+    .quad 0x00CF92000000FFFF
+gdt_end:
+
+gdt_pointer:
+    .word gdt_end - gdt_start - 1
+    .long gdt_start
+
 .section .text
 .global _start
 .type _start, @function
@@ -63,18 +70,19 @@ _start:
 	stack (as it grows downwards on x86 systems). This is necessarily done
 	in assembly as languages such as C cannot function without a stack.
 	*/
-	mov $stack_top, %esp
+    mov $stack_top, %esp
 
-	/*
-	This is a good place to initialize crucial processor state before the
-	high-level kernel is entered. It's best to minimize the early
-	environment where crucial features are offline. Note that the
-	processor is not fully initialized yet: Features such as floating
-	point instructions and instruction set extensions are not initialized
-	yet. The GDT should be loaded here. Paging should be enabled here.
-	C++ features such as global constructors and exceptions will require
-	runtime support to work as well.
-	*/
+    lgdt gdt_pointer
+
+    jmp $0x08, $reload_cs
+
+reload_cs:
+    mov $0x10, %ax
+    mov %ax, %ds
+    mov %ax, %es
+    mov %ax, %fs
+    mov %ax, %gs
+    mov %ax, %ss
 
 	/*
 	Enter the high-level kernel. The ABI requires the stack is 16-byte
@@ -84,23 +92,11 @@ _start:
 	stack since (pushed 0 bytes so far), so the alignment has thus been
 	preserved and the call is well defined.
 	*/
-	call kmain
+    call kmain
 
-	/*
-	If the system has nothing more to do, put the computer into an
-	infinite loop. To do that:
-	1) Disable interrupts with cli (clear interrupt enable in eflags).
-	   They are already disabled by the bootloader, so this is not needed.
-	   Mind that you might later enable interrupts and return from
-	   kmain (which is sort of nonsensical to do).
-	2) Wait for the next interrupt to arrive with hlt (halt instruction).
-	   Since they are disabled, this will lock up the computer.
-	3) Jump to the hlt instruction if it ever wakes up due to a
-	   non-maskable interrupt occurring or due to system management mode.
-	*/
-	cli
-1:	hlt
-	jmp 1b
+    cli
+1:  hlt
+    jmp 1b
 
 /*
 Set the size of the _start symbol to the current location '.' minus its start.

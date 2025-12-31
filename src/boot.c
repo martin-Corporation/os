@@ -5,6 +5,7 @@
 #include "product.h"
 #include "serial.h"
 #include "vga.h"
+#include <stdio.h>
 
 #ifdef __linux__
 #error                                                                         \
@@ -13,6 +14,14 @@
 
 #if !defined(__i386__) && !defined(__wasm__)
 #error "martinOS needs to be compiled with a ix86-elf compiler"
+#endif
+
+#ifdef __DATE__
+#ifdef __TIME__
+#define BUILD_DATE __DATE__ " " __TIME__
+#else
+#define BUILD_DATE __DATE__
+#endif
 #endif
 
 void kmain() {
@@ -26,7 +35,9 @@ void kmain() {
   terminal_writestring(" ");
   terminal_writestring(PRODUCT_VERSION);
   terminal_setcolor(vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK));
-  terminal_writestring("!\n\n");
+  puts("!");
+
+  printf("Build date: %s\n\n", BUILD_DATE);
 
   puts_status(status_map[STATUS_OK], "Booted into the kernel");
 

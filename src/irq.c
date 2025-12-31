@@ -36,8 +36,10 @@ void irq_initialize() {
   for (int i = 0; i < 16; i++)
     isr_register_handler(PIC_REMAP_OFFSET + i, i686_IRQ_Handler);
 
+#ifndef __wasm__
   // enable interrupts
   enable_interrupts();
+#endif
 }
 
 void irq_register_handler(int irq, irq_handler_t handler) {

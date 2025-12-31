@@ -9,7 +9,7 @@ The world's most consistent operating system.
 Install the following packages with [Homebrew](https://brew.sh/):
 
 ```sh
-brew install i686-elf-gcc qemu
+brew install i686-elf-grub i686-elf-gcc qemu
 ```
 
 ### 2. Building & Running
@@ -26,6 +26,12 @@ To build for WebAssembly instead:
 make wasm
 ```
 
+To build an ISO image:
+
+```sh
+make iso
+```
+
 To delete the build, use:
 
 ```sh
@@ -36,8 +42,10 @@ make clean
 
 > TODO: Make a GitHub roadmap
 
-- [ ] `<canvas>` renderer for the WASM build (+ simulate VGA Text Mode, preferably also simulate the same VGA Text Mode buffer at the same address)
-- [ ] `ext4` File System
+- [x] `<canvas>` Renderer for the WASM Build
+- [ ] `ext2` File System
 - [ ] Userspace (e.g. program execution)
+  - [x] Custom Executable Format
+  - [ ] Userspace Shell (`msh`)
 - [ ] Networking
 - [ ] Desktop Environment (DE)

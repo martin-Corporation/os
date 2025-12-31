@@ -1,4 +1,5 @@
 *.o
 *.bin
+*.iso
 *.wasm
 .DS_Store

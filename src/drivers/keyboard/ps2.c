@@ -1,0 +1,68 @@
+#include "ps2.h"
+#include "../../ime.h"
+#include "../../irq.h"
+#include "../../pic.h"
+#include <asm/io.h>
+
+#define PS2_CMD 0x64
+#define PS2_DATA 0x60
+
+static volatile int shift_pressed __attribute__((section(".lowdata"))) = 0;
+
+void ps2_keyboard_handler(registers_t *regs) {
+  (void)regs;
+
+  while (inb(PS2_CMD) & 0x01) {
+    uint8_t sc = inb(PS2_DATA);
+
+    if (sc == 0x2A || sc == 0x36)
+      shift_pressed = 1;
+    else if (sc == 0xAA || sc == 0xB6)
+      shift_pressed = 0;
+
+    const kbd_packet_t packet = {.scancode = sc,
+                                 .shift_pressed = shift_pressed,
+                                 .event = (sc & 0x80) != 0 ? KEY_UP : KEY_DOWN};
+
+    handle_packet(packet);
+  }
+}
+
+static void ps2_wait_write_ready() {
+  while (inb(PS2_CMD) & 0x02)
+    ;
+}
+
+static void ps2_wait_output() {
+  while (!(inb(PS2_CMD) & 0x01))
+    ;
+}
+
+#ifndef __wasm__
+int ps2_keyboard_initialize() {
+  outb(PS2_CMD, 0xAD);
+  ps2_wait_write_ready();
+  outb(PS2_CMD, 0xA7);
+  ps2_wait_write_ready();
+  while (inb(PS2_CMD) & 0x01)
+    inb(PS2_DATA);
+  ps2_wait_write_ready();
+  outb(PS2_CMD, 0x20);
+  ps2_wait_output();
+  uint8_t config = inb(PS2_DATA);
+  config |= 0x01;
+  ps2_wait_write_ready();
+  outb(PS2_CMD, 0x60);
+  ps2_wait_write_ready();
+  outb(PS2_DATA, config);
+  ps2_wait_write_ready();
+  outb(PS2_DATA, 0xF4);
+  ps2_wait_output();
+  if (inb(PS2_DATA) != 0xFA)
+    return -1;
+  outb(PS2_CMD, 0xAE);
+  pic_unmask(1);
+  irq_register_handler(1, ps2_keyboard_handler);
+  return 0;
+}
+#endif

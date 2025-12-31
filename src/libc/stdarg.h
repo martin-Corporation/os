@@ -21,7 +21,13 @@ typedef char *va_list;
 #define va_end(ap) (void)((ap) = 0)
 #define va_arg(ap, type) (((type *)((ap) = ((ap) + sizeof(type))))[-1])
 #else
+#ifndef _LIBC_STDARG_H
+#define _LIBC_STDARG_H
+
 typedef __builtin_va_list va_list;
+
+#endif /* _LIBC_STDARG_H */
+
 #define va_start(ap, last_fixed) __builtin_va_start(ap, last_fixed)
 #define va_arg(ap, type) __builtin_va_arg(ap, type)
 #define va_end(ap) __builtin_va_end(ap)

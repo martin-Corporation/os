@@ -1,7 +1,8 @@
 #include "ime.h"
-#include "cursor.h"
 #include "drivers/keyboard/layouts/us.h"
+#include "logs.h"
 #include "product.h"
+#include "serial.h"
 #include "shell.h"
 #include "vga.h"
 #include <stdio.h>
@@ -21,23 +22,19 @@ int backspace_buffer(char *buf) {
 }
 
 void ime_initialize() {
-  terminal_writestring("\n");
+  output_writestring("\n");
   terminal_setcolor(VGA_COLOR_WHITE);
-  terminal_writestring(PRODUCT_NAME);
-  terminal_writestring(" ");
-  terminal_writestring(PRODUCT_VERSION);
+  output_writestring(PRODUCT_NAME);
+  output_writestring(" ");
+  output_writestring(PRODUCT_VERSION);
   terminal_setcolor(VGA_COLOR_LIGHT_GREY);
-  terminal_writestring(" shell (msh)\n");
-  terminal_column = 0;
-  terminal_writestring(PROMPT);
+  output_writestring(" shell (msh)\n");
+  output_writestring(PROMPT);
 }
 
 static void terminal_backspace() {
   if (terminal_column > strlen(PROMPT)) {
-    terminal_column--;
-    terminal_writestring(" ");
-    terminal_column--;
-    update_cursor(terminal_column, terminal_row);
+    output_writestring("\b \b");
   }
 }
 
@@ -55,25 +52,24 @@ void handle_packet(kbd_packet_t packet) {
   }
 
   if (key == '\n') {
-    terminal_writestring("\n");
+    output_writestring("\n");
 
-    // handle buffer
-    // ...
-    handle_command(&*prompt_buffer);
+    // handle command
+    handle_command(prompt_buffer);
 
     // empty buffer
     prompt_buffer[0] = '\0';
 
-    terminal_writestring(PROMPT);
+    output_writestring(PROMPT);
 
     return;
   }
 
-  // For some reason terminal_writestring(&key) prints random garbage between
-  // characters, so we have to use printf
-  printf("%c", key);
+  terminal_putchar(key);
+  serial_putchar(key);
 
   const size_t len = strlen(prompt_buffer);
+
   if (len < sizeof(prompt_buffer) - 1) {
     prompt_buffer[len] = key;
     prompt_buffer[len + 1] = '\0';

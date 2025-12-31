@@ -3,7 +3,11 @@
 
 const status_t status_map[] = {{"  OK  ", VGA_COLOR_GREEN},
                                {"", VGA_COLOR_BLACK},
-                               {" FAIL ", VGA_COLOR_LIGHT_RED}};
+                               {"FAILED", VGA_COLOR_LIGHT_RED}};
+
+#ifdef __wasm__
+const size_t status_map_size = sizeof(status_map) / sizeof(status_map[0]);
+#endif
 
 void output_writestring(const char *s) {
   terminal_writestring(s);

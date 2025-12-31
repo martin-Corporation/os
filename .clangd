@@ -4,3 +4,5 @@ CompileFlags:
     - i386-unknown-none-elf
     - -D__i386__
     - -I/Users/martin/Documents/Projects/martincorp/os/src/libc
+    - -Wall
+    - -Wextra

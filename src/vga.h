@@ -41,7 +41,3 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y);
 void terminal_putchar(const char c);
 void terminal_write(const char *data, size_t size);
 void terminal_writestring(const char *data);
-
-#ifdef __wasm__
-uint8_t get_terminal_color();
-#endif

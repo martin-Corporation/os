@@ -6,6 +6,23 @@
 #include <stdio.h>
 #include <string.h>
 
+int puts(const char *s) {
+  terminal_writestring(s);
+  terminal_writestring("\n");
+
+  serial_writestring(s);
+  serial_writestring("\n");
+
+  return strlen(s);
+}
+
+int putchar(int c) {
+  terminal_putchar(c);
+  serial_putchar(c);
+
+  return c;
+}
+
 static const char g_hex_chars[] = "0123456789abcdef";
 
 int printf_unsigned(unsigned long long number, int radix) {
