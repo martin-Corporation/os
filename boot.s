@@ -38,65 +38,64 @@ stack_top:
 
 .section .data
 gdt_start:
-    /* Setup GDT before setting it up in the HAL to make it boot (GRUB does a General Protection Fault otherwise for some reason) */
-    .quad 0x0000000000000000
-    .quad 0x00CF9A000000FFFF
-    .quad 0x00CF92000000FFFF
+  /* Setup GDT before setting it up in the HAL to make it boot (GRUB does a General Protection Fault otherwise for some reason) */
+  .quad 0x0000000000000000
+  .quad 0x00CF9A000000FFFF
+  .quad 0x00CF92000000FFFF
 gdt_end:
 
 gdt_pointer:
-    .word gdt_end - gdt_start - 1
-    .long gdt_start
+  .word gdt_end - gdt_start - 1
+  .long gdt_start
 
 .section .text
 .global _start
 .type _start, @function
+
 _start:
-	/*
-	The bootloader has loaded us into 32-bit protected mode on a x86
-	machine. Interrupts are disabled. Paging is disabled. The processor
-	state is as defined in the multiboot standard. The kernel has full
-	control of the CPU. The kernel can only make use of hardware features
-	and any code it provides as part of itself. There's no printf
-	function, unless the kernel provides its own <stdio.h> header and a
-	printf implementation. There are no security restrictions, no
-	safeguards, no debugging mechanisms, only what the kernel provides
-	itself. It has absolute and complete power over the
-	machine.
-	*/
+  /*
+  The bootloader has loaded us into 32-bit protected mode on a x86
+  machine. Interrupts are disabled. Paging is disabled. The processor
+  state is as defined in the multiboot standard. The kernel has full
+  control of the CPU. The kernel can only make use of hardware features
+  and any code it provides as part of itself. There's no printf
+  function, unless the kernel provides its own <stdio.h> header and a
+  printf implementation. There are no security restrictions, no
+  safeguards, no debugging mechanisms, only what the kernel provides
+  itself. It has absolute and complete power over the
+  machine.
+  */
 
-	/*
-	To set up a stack, we set the esp register to point to the top of the
-	stack (as it grows downwards on x86 systems). This is necessarily done
-	in assembly as languages such as C cannot function without a stack.
-	*/
-    mov $stack_top, %esp
-
-    lgdt gdt_pointer
-
-    jmp $0x08, $reload_cs
+  /*
+  To set up a stack, we set the esp register to point to the top of the
+  stack (as it grows downwards on x86 systems). This is necessarily done
+  in assembly as languages such as C cannot function without a stack.
+  */
+  mov $stack_top, %esp
+  lgdt gdt_pointer
+  jmp $0x08, $reload_cs
 
 reload_cs:
-    mov $0x10, %ax
-    mov %ax, %ds
-    mov %ax, %es
-    mov %ax, %fs
-    mov %ax, %gs
-    mov %ax, %ss
+  mov $0x10, %ax
+  mov %ax, %ds
+  mov %ax, %es
+  mov %ax, %fs
+  mov %ax, %gs
+  mov %ax, %ss
 
-	/*
-	Enter the high-level kernel. The ABI requires the stack is 16-byte
-	aligned at the time of the call instruction (which afterwards pushes
-	the return pointer of size 4 bytes). The stack was originally 16-byte
-	aligned above and we've pushed a multiple of 16 bytes to the
-	stack since (pushed 0 bytes so far), so the alignment has thus been
-	preserved and the call is well defined.
-	*/
-    call kmain
+  /*
+  Enter the high-level kernel. The ABI requires the stack is 16-byte
+  aligned at the time of the call instruction (which afterwards pushes
+  the return pointer of size 4 bytes). The stack was originally 16-byte
+  aligned above and we've pushed a multiple of 16 bytes to the
+  stack since (pushed 0 bytes so far), so the alignment has thus been
+  preserved and the call is well defined.
+  */
+  call kmain
 
-    cli
-1:  hlt
-    jmp 1b
+  cli
+1:hlt
+  jmp 1b
 
 /*
 Set the size of the _start symbol to the current location '.' minus its start.
