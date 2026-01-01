@@ -16,7 +16,7 @@ int create_mrtn(const char *bin_path, const char *mrtn_path) {
   if (!mrtn) {
     perror("fopen mrtn");
     fclose(bin);
-    return -1;
+    return -2;
   }
 
   fseek(bin, 0, SEEK_END);
@@ -53,14 +53,14 @@ int inspect_mrtn(const char *mrtn_path) {
   if (fread(magic, 1, MAGIC_SIZE, f) != MAGIC_SIZE) {
     perror("fread magic");
     fclose(f);
-    return -1;
+    return -2;
   }
 
   if (magic[0] != 'M' || magic[1] != 'R' || magic[2] != 'T' ||
       magic[3] != 'N') {
     fprintf(stderr, "Invalid magic\n");
     fclose(f);
-    return -1;
+    return -3;
   }
 
   uint8_t version;
@@ -68,7 +68,7 @@ int inspect_mrtn(const char *mrtn_path) {
   if (fread(&version, 1, 1, f) != 1) {
     perror("fread version");
     fclose(f);
-    return -1;
+    return -4;
   }
 
   printf("Version: %u\n", version);
@@ -78,7 +78,7 @@ int inspect_mrtn(const char *mrtn_path) {
   if (fread(&size, 4, 1, f) != 1) {
     perror("fread size");
     fclose(f);
-    return -1;
+    return -5;
   }
 
   printf("Payload size: %u bytes\n", size);
@@ -88,14 +88,14 @@ int inspect_mrtn(const char *mrtn_path) {
   if (!payload) {
     perror("malloc");
     fclose(f);
-    return -1;
+    return -6;
   }
 
   if (fread(payload, 1, size, f) != size) {
     perror("fread payload");
     free(payload);
     fclose(f);
-    return -1;
+    return -7;
   }
 
   printf("Payload first 16 bytes: ");
