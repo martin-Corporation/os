@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 void syscall_handler(registers_t *regs) {
-  const uint32_t syscall = regs->eax;
+  const syscall_t syscall = (syscall_t)regs->eax;
 
   switch (syscall) {
   case SYSCALL_TEST: {

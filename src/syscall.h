@@ -1,8 +1,8 @@
 #pragma once
 
-typedef enum syscall_type {
+typedef enum syscall {
   SYSCALL_TEST = 5,
-} syscall_type_t;
+} syscall_t;
 
 void syscall_initialize();
 
