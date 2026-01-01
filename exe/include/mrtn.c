@@ -107,5 +107,6 @@ int inspect_mrtn(const char *mrtn_path) {
 
   free(payload);
   fclose(f);
+
   return 0;
 }
