@@ -56,6 +56,7 @@ long syscall(long number, ...) {
                       .error = 0};
 
   syscall_handler(&regs);
+
   return regs.eax;
 #endif
 }
